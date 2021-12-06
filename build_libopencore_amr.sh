@@ -16,7 +16,7 @@ rm -rf "${DEST}"
 mkdir -p "${DEST}"
 
 TARGETS="arm64 x86_64 arm64_sim"
-LIBS="libopencore-amrnb.a libopencore-amrwb.a"
+LIBS="opencore-amrnb opencore-amrwb"
 
 ./configure
 for target in $TARGETS; do
@@ -73,7 +73,7 @@ for target in $TARGETS; do
     make install
     mkdir -p $DEST/lib/$target/
     for i in $LIBS; do
-        mv $DEST/lib/$i $DEST/lib/$target/
+        mv $DEST/lib/lib$i.a $DEST/lib/$target/
     done
 done
 
@@ -86,8 +86,8 @@ mkdir -p $DEST/lib/universal_sim
 mkdir -p $DEST/output
 
 for i in $LIBS; do
-lipo -create -output $DEST/lib/universal_sim/$i $DEST/lib/x86_64/$i $DEST/lib/arm64_sim/$i
-input="-library $DEST/lib/arm64/$i -headers $DEST/include -library $DEST/lib/universal_sim/$i -headers $DEST/include"
-xcodebuild -create-xcframework $input -output $DEST/output/$i.xcframework
+lipo -create -output $DEST/lib/universal_sim/lib$i.a $DEST/lib/x86_64/lib$i.a $DEST/lib/arm64_sim/lib$i.a
+input="-library $DEST/lib/arm64/lib$i.a -headers $DEST/include/$i -library $DEST/lib/universal_sim/lib$i.a -headers $DEST/include/$i"
+  xcodebuild -create-xcframework $input -output $DEST/output/$i.xcframework
 open $DEST/output
 done
